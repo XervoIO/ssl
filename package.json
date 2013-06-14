@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": "",
+  "homepage" : "https://github.com/mucus/ssl.git",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/mucus/ssl.git"
+    },
+  "homepage"
   "keywords": [
     "ssl",
     "tsl",
@@ -17,6 +22,6 @@
     "verification",
     "passphrase"
   ],
-  "author": "Erin Thompson",
+  "author": "Erin Thompson <erin@modulus.io>",
   "license": "BSD"
 }

@@ -9,11 +9,33 @@ You can check out openssl documentatin at [openSSL] (http://www.openssl.org/docs
 ## Simple Usage
 
     var ssl = require('ssl');
-    var cert = 'cert.pem';
+    var cert = '';
+    var key = 'key.pem';
+    var pass = 'abcdefg';
+
+    var str_cert = 'encrypted certificate';
+    var opts {};
+    opts.fileName = 'cert.pem';
+
+    ssl.toFile(str_cert, function(err, file) {
+      if(err) {
+        return console.log(err)
+      }
+      cert = file;
+    });
 
     ssl.verify(cert, function(err, status) {
       if(err) {
-        console.log(err);
+        return console.log(err);
       }
-      console.log('this certificate is ok');
+      return console.log('this certificate is ok');
+    });
+
+    var opts = {};
+    opts.newkeyName = 'newKey.pem';
+    ssl.removePassphrase(cert, pass, opts, function(err) {
+      if(err) {
+        return console.log(err);
+      }
+      return console.log('passphrase removed');
     });
