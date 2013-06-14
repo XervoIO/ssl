@@ -1,5 +1,5 @@
 {
-  "name": "SSL",
+  "name": "ssl",
   "version": "0.0.0",
   "description": "verification of ssl certificates",
   "main": "ssl.js",
@@ -11,7 +11,6 @@
     "type" : "git",
     "url" : "https://github.com/mucus/ssl.git"
     },
-  "homepage"
   "keywords": [
     "ssl",
     "tsl",
@@ -22,6 +21,9 @@
     "verification",
     "passphrase"
   ],
-  "author": "Erin Thompson <erin@modulus.io>",
+  "author": {
+   "name" : "Erin Thompson",
+   "email":"erin@modulus.io"
+   },
   "license": "BSD"
 }
