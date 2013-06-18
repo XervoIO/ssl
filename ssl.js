@@ -109,7 +109,7 @@ ssl.removePasspharse = function(file, pass, opts, callback) {
   exec('openssl rsa -passin pass:' + pass + ' -inform  ' + opts.informExt + ' -in '+ file + ' -outform '+ opts.outformExt + ' -out ' +  opts.newKeyName
     , function(error, stdout) {
     if(error) {
-      callback(error);
+      return callback(error);
     }
     fs.readFileSync(opts.newKeyName, function(err, data) {
       if(err) {
@@ -119,11 +119,10 @@ ssl.removePasspharse = function(file, pass, opts, callback) {
         if(err) {
           return callback(err);
         }
-        return console.log('saved back to original file without passphrase');
-      })
-      return callback(null);
-    })
-  })
+        console.log('saved back to original file without passphrase');
+      });
+    });
+  });
   return callback(null);
 };
 
