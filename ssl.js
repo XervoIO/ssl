@@ -77,7 +77,7 @@ ssl.verify = function(file, callback) {
       index = remaining.indexOf('\n');
     }
     callback(null, "this certificate has been verified");
-  })
+  });
 };
 
 /****************************************************************************************
@@ -98,7 +98,7 @@ ssl.verify = function(file, callback) {
 ******************************************************************************************/
 
 
-ssl.removePasspharse = function(file, pass, opts, callback) {
+ssl.removePassphrase = function(file, pass, opts, callback) {
   if(typeof opts === 'function') {
     callback = opts;
     opts = {};
@@ -111,19 +111,19 @@ ssl.removePasspharse = function(file, pass, opts, callback) {
     if(error) {
       return callback(error);
     }
-    fs.readFileSync(opts.newKeyName, function(err, data) {
+    fs.readFile(opts.newKeyName, function(err, data) {
       if(err) {
-        return callback(err);
+        return callback('read file', err);
       }
-      fs.writeFileSync(file, data, function(err) {
+      fs.writeFile(file, data, function(err) {
         if(err) {
-          return callback(err);
+          return callback('write file', err);
         }
         console.log('saved back to original file without passphrase');
+        callback(null);
       });
     });
   });
-  return callback(null);
 };
 
 /****************************************************************************************
@@ -161,7 +161,7 @@ ssl.toFile = function(string, opts, callback) {
           return callback(err, null);
         }
         return callback(null, opts.name + opts.ext);
-    })
+    });
 };
 
 

@@ -4,7 +4,12 @@ var fs = require('fs');
 
 var files = [];
 
-var key = './privkey.pem';
+var key = './test/certTest/privkey.pem';
+var newKey = './test/certTest/newPrivteKey.pem';
+var cert = './test/certTest/cacert.pem';
+var der = './test/certTest/testcert.der';
+var pem = './test/certTest/testcert.pem';
+var keyPass = './test/certTest/absolutePrivateKey.pem';
 
 var string = '-----BEGIN ENCRYPTED PRIVATE KEY-----' + '\n' +
 'MIICxjBABgkqhkiG9w0BBQ0wMzAbBgkqhkiG9w0BBQwwDgQIXm2FMdwCVu8CAggA' + '\n' +
@@ -24,84 +29,110 @@ var string = '-----BEGIN ENCRYPTED PRIVATE KEY-----' + '\n' +
 'myds9j7Yk08z06PRrNOIc55J9sXCnlQ6hhl113W/1hjlPetD26BpykIt' + '\n' +
 '-----END ENCRYPTED PRIVATE KEY-----';
 
-describe('ssl', function() {
-  //---------------TEST FOR toFile(file,opts,callback)----------------------------
-  // it('should create a new folder, and add the string in a file' , function(done) {
-  //   if(fs.existsSync('./temp')) {
-  //     files = fs.readdirSync('./temp');
-  //     files.forEach(function(file, index) {
-  //       console.log(file);
-  //       fs.unlinkSync('./temp/' + file);
-  //     });
-  //       fs.rmdirSync('./temp');
-  //     }
-  //   ssl.toFile(string, function(err, file) {
-  //     if(err) {
-  //       console.log(err);
-  //       done();
-  //     }
-  //     assert.equal('temp.pem', file, 'there should be a folder in test named temp with temp.pem in it.');
-  //     done();
-  //   });
-  // });
-  //-----------------TEST FOR removePassphrase(file, opts, callback)--------------------------
-  it('should remove the given passphrase from the file and write it back to the original file', function(done) {
-    var oldKey = '';
-    var newKey = '';
-    ssl.removePasspharse('./privkey.pem', 'foobar', function(err) {
-      if(err){
-        console.log('error in removePassphrase', err);
-        //done();
-      }
-      console.log('reading...files....');
-       fs.readFile('./privkey.pem', function(err, data) {
-        if(err) {
-          console.log(err);
-          //done();
-        }
-        console.log(data.toString());
-        oldKey = data.toString();
-       });
-       fs.readFile('./newPrivteKey.pem', function(err, data) {
-        if(err) {
-          console.log(err);
-          //done();
-        }
-        console.log(data.toString());
-        newKey = data.toString();
-       });
+var beforeTest = function() {
+  if(fs.existsSync('./temp')) {
+    files = fs.readdirSync('./temp');
+    files.forEach(function(file, index) {
+      fs.unlinkSync('./temp/' + file);
     });
-     assert.equal(oldKey, newKey, 'the contents of the two key files should be the same');
-     done();
-  });
-  //-----------------TEST FOR verify(file, callback)--------------------------------------
-  it('should verify the certificate given the file that has a passpharse removed', function(done) {
-    var verifyBool = 'false';
-    ssl.verify('./privKey.pem', function(err, results) {
+      fs.rmdirSync('./temp');
+    }
+  if(fs.existsSync('./test/testcert.der')) {
+    fs.unlinkSync('./test/testcert.der');
+  }
+  if(fs.existsSync('./test/testcert.pem')) {
+    fs.unlinkSync('./test/testcert.pem');
+  }
+  fs.readFile(keyPass, function(err, data) {
       if(err) {
-        return console.log('error on verify', err);
-        done();
+        return console.log(err);
       }
-      console.log(results);
-      assert.equal(results, null, 'it should have verified the certificate');
-      done();
+    fs.writeFile(key, data, function(err) {
+      if(err) {
+        return console.log(err);
+      }
     });
   });
+  return;    
+};
+
+
+
+
+
+describe('ssl', function() {
+  beforeTest();
+
+//  ---------------TEST FOR toFile(file,opts,callback)----------------------------
+  describe('#toFile', function() {
+    it('should create a new folder, and add the string in a file' , function(done) {
+      ssl.toFile(string, function(err, file) {
+        if(err) {
+          console.log(err);
+          done();
+        }
+          assert.equal('temp.pem', file, 'there should be a folder in test named temp with temp.pem in it.');
+          done(); 
+        });
+      });
+  });
+
+  //-----------------TEST FOR removePassphrase(file, opts, callback)--------------------------
+  describe('#removePassphrase', function() {
+    it('should remove the given passphrase from the file and write it back to the original file', function(done) {
+      ssl.removePassphrase(key, 'foobar', { newKeyName : newKey}, function(err) {
+        if(err){
+          console.log('error in removePassphrase', err);
+        }
+         fs.readFile(key, function(err, oldKey) {
+          if(err) {
+            console.log(err);
+          }
+            fs.readFile(newKey, function(err, newKey) {
+              if(err) {
+                console.log(err);
+              }
+
+              assert.equal(oldKey.toString(), newKey.toString(), 'the contents of the two key files should be the same');
+              done();
+           });
+         });
+      });
+    });
+  });
+
+  //-----------------TEST FOR verify(file, callback)--------------------------------------
+  describe('#Verify', function() {
+    it('should verify the certificate given the file that has a passpharse removed', function(done) {
+      ssl.verify(cert, function(err, results) {
+        assert.equal('error 18 at 0 depth lookup:self signed certificate', err, 'it should have tried to verify the certificate');
+        assert.equal(null, results, 'the certificate cannot be verified so the result should be null');
+        done();
+      });
+    });
+  });
+
   //-----------------TEST FOR toDER(file,derFileName,callback)----------------------------
-  // it('should turn a .pem file to a .der file', function(done) {
-  //   if(fs.existsSync('./test.der')) {
-  //     fs.unlinkSync('./test.der');
-  //   }
-  //   var exists = 'false';
-  //   ssl.toDER('./privkey.pem', 'test.der', function(err) {
-  //     if(err) {
-  //       console.log(err)
-  //     }
-  //    if(fs.existsSync('./test.der')) {
-  //     exists = 'true';
-  //    }
-  //    assert.equal('true', exists, 'there should be a file named test.der');
-  //   });
-  // });
-  //-----------------TEST FOR toPEM(file,derFileName,callback)----------------------------
+  describe('#toDer', function() {  
+    it('should turn a .pem file to a .der file', function(done) {
+      var exists = false;
+      ssl.toDER(cert, der, function(err) {
+        assert.equal(null, err, 'the err should be null');
+        assert.equal(true, fs.existsSync(der), 'there should be a file named test.der');
+        done();
+      });
+    });
+  });
+    
+  //-----------------TEST FOR toPEM(file,derFileName,callback)--------------------------------
+  describe('#toPEM', function() {
+    it('should turn a .der file to a .pem file',  function(done) {
+      ssl.toPEM(der, pem, function(err) {
+        assert.equal(null, err, 'the error should be null');
+        assert.equal(true, fs.existsSync(pem), 'there should be a file created named testcert.pem');
+        done();
+      });
+    });
+  });
+
 });
