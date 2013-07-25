@@ -4,13 +4,13 @@
   "description": "verification of ssl certificates",
   "main": "ssl.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
-  "homepage" : "https://github.com/mucus/ssl.git",
+  "homepage": "https://github.com/mucus/ssl.git",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/mucus/ssl.git"
-    },
+    "type": "git",
+    "url": "https://github.com/mucus/ssl.git"
+  },
   "keywords": [
     "ssl",
     "tsl",
@@ -22,8 +22,11 @@
     "passphrase"
   ],
   "author": {
-   "name" : "Erin Thompson",
-   "email":"erin@modulus.io"
-   },
-  "license": "BSD"
+    "name": "Erin Thompson",
+    "email": "erin@modulus.io"
+  },
+  "license": "BSD",
+  "devDependencies": {
+    "mocha": "~1.11.0"
+  }
 }
