@@ -4,12 +4,12 @@ var fs = require('fs');
 
 var files = [];
 
-var key = './tests/certTest/privkey.pem';
-var newKey = './tests/certTest/newPrivteKey.pem';
-var cert = './tests/certTest/cacert.pem';
-var der = './tests/certTest/testcert.der';
-var pem = './tests/certTest/testcert.pem';
-var keyPass = './tests/certTest/absolutePrivateKey.pem';
+var key = './tests/fixtures/privkey.pem';
+var newKey = './tests/fixtures/newPrivteKey.pem';
+var cert = './tests/fixtures/cacert.pem';
+var der = './tests/fixtures/testcert.der';
+var pem = './tests/fixtures/testcert.pem';
+var keyPass = './tests/fixtures/absolutePrivateKey.pem';
 
 var string = '-----BEGIN ENCRYPTED PRIVATE KEY-----\n' +
 'MIICxjBABgkqhkiG9w0BBQ0wMzAbBgkqhkiG9w0BBQwwDgQIXm2FMdwCVu8CAggA\n' +
@@ -67,10 +67,6 @@ describe('ssl', function() {
   describe('#toFile', function() {
     it('should create a new folder, and add the string in a file' , function(done) {
       ssl.toFile(string, function(err, file) {
-        if (err) {
-          console.log(err);
-          done();
-        }
         assert.equal('temp.pem', file, 'there should be a folder in test named temp with temp.pem in it.');
         done();
       });
@@ -80,20 +76,9 @@ describe('ssl', function() {
   //-----------------TEST FOR removePassphrase(file, opts, callback)--------------------------
   describe('#removePassphrase', function() {
     it('should remove the given passphrase from the file and write it back to the original file', function(done) {
-      ssl.removePassphrase(key, 'foobar', { newKeyName : newKey}, function(err) {
-        if (err){
-          console.log('error in removePassphrase', err);
-        }
+      ssl.removePassphrase(key, 'foobar', { newKeyName : newKey}, function() {
         fs.readFile(key, function(err, oldKey) {
-          if (err) {
-            console.log(err);
-          }
-
           fs.readFile(newKey, function(err, newKey) {
-            if (err) {
-              console.log(err);
-            }
-
             assert.equal(oldKey.toString(), newKey.toString(), 'the contents of the two key files should be the same');
             done();
           });
