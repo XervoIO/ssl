@@ -3,6 +3,8 @@ VERIFY-SSL
 
 SSL certificate verification for node.js
 
+[![Build Status](https://travis-ci.org/onmodulus/ssl.png?branch=develop)](https://travis-ci.org/onmodulus/ssl)
+
 ## Docs
 You can check out openssl documentation at [openSSL](http://www.openssl.org/docs/apps/openssl.html).
 
