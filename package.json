@@ -1,15 +1,16 @@
 {
   "name": "ssl",
   "version": "0.0.0",
-  "description": "verification of ssl certificates",
+  "description": "Verification of SSL certificates",
   "main": "ssl.js",
   "scripts": {
-    "test": "mocha"
+    "test": "make build"
   },
-  "homepage": "https://github.com/mucus/ssl.git",
+  "homepage": "https://github.com/onmodulus/ssl.git",
+  "bugs": "https://github.com/onmodulus/ssl/issues",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mucus/ssl.git"
+    "url": "https://github.com/onmodulus/ssl.git"
   },
   "keywords": [
     "ssl",
@@ -21,12 +22,14 @@
     "verification",
     "passphrase"
   ],
-  "author": {
-    "name": "Erin Thompson",
-    "email": "erin@modulus.io"
-  },
-  "license": "BSD",
+  "author": "Modulus <feedback@modulus.io>",
+  "contributors": [
+    "Erin Thompson <erin@modulus.io>",
+    "Matt Hernandez <matt@modulus.io>"
+  ],
+  "license": "MIT",
   "devDependencies": {
-    "mocha": "~1.11.0"
+    "mocha": "~1.11.0",
+    "jshint": "~2.1.4"
   }
 }
