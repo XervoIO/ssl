@@ -1,9 +1,2 @@
-*.crt
-*.pem
-*.der
-*.csr
-*.key
-*.p12
-*.cert
 *.srl
 *.rnd
