@@ -1,6 +1,6 @@
 {
   "name": "ssl",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Verification of SSL certificates",
   "main": "ssl.js",
   "scripts": {
