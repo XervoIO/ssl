@@ -1,6 +1,3 @@
-var fs = require('fs');
-var exec = require('child_process').exec, child;
-var ssl = {};
 /*********************************************
 
   Verify SSl Certificates
@@ -10,6 +7,12 @@ var ssl = {};
 
 ***********************************************/
 
+var fs = require('fs');
+var exec = require('child_process').exec;
+var path = require('path');
+var util = require('util');
+var ssl = {};
+
 /***************************************************************************************
 
   Changing a .pem to .der
@@ -18,14 +21,12 @@ var ssl = {};
   @param {function} callback throw an error if command does not execute properly or null
 
 ******************************************************************************************/
+
 ssl.toDER = function(file, derFileName, callback) {
-  exec('openssl x509 -in ' + file + ' -outform der -out ' + derFileName, function(error, stdout) {
-    if(error) {
-      callback(error);
-    }
-    console.log(file + ' was changed to ' + derFileName);
+  exec('openssl x509 -in ' + file + ' -outform der -out ' + derFileName, function(error) {
+    if (error) return callback(error);
     callback(null);
-  })
+  });
 };
 
 /***************************************************************************************
@@ -38,12 +39,10 @@ ssl.toDER = function(file, derFileName, callback) {
 ******************************************************************************************/
 
 ssl.toPEM = function(file, pemFileName, callback) {
-  exec('openssl x509 -in ' + file + ' -outform pem -out ' + pemFileName, function(error, stdout) {
-    if(error) {
-      callback(error);
-    }
+  exec('openssl x509 -in ' + file + ' -inform der -text -outform pem -out ' + pemFileName, function(error) {
+    if (error) return callback(error);
     callback(null);
-  })
+  });
 };
 
 /***************************************************************************************
@@ -59,11 +58,8 @@ ssl.toPEM = function(file, pemFileName, callback) {
 
 ssl.verify = function(file, callback) {
   exec('openssl verify ' + file, function(error, stdout, stderr) {
-    if(error) {
-      return callback(error, null);
-    } else if (stderr){
-      return callback(stderr, null);
-    }
+    if (error || stderr) return callback(error || stderr, null);
+
     var remaining = stdout;
     var index = stdout.indexOf('\n');
     while (index > -1) {
@@ -71,13 +67,16 @@ ssl.verify = function(file, callback) {
       remaining = remaining.substring(index + 1);
       index = line.indexOf(' ');
       var firstWord = line.substring(0, index);
-      if(firstWord === 'error') {
+
+      if (firstWord === 'error') {
         return callback(line, null);
       }
+
       index = remaining.indexOf('\n');
     }
-    callback(null, "this certificate has been verified");
-  })
+
+    callback(null, 'this certificate has been verified');
+  });
 };
 
 /****************************************************************************************
@@ -97,34 +96,35 @@ ssl.verify = function(file, callback) {
 
 ******************************************************************************************/
 
-
-ssl.removePasspharse = function(file, pass, opts, callback) {
-  if(typeof opts === 'function') {
+ssl.removePassphrase = function(file, pass, opts, callback) {
+  if (typeof opts === 'function') {
     callback = opts;
     opts = {};
   }
+
   opts.newKeyName = opts.newKeyName || 'newPrivteKey.pem';
   opts.informExt = opts.informExt || 'PEM';
   opts.outformExt = opts.outformExt || 'PEM';
-  exec('openssl rsa -passin pass:' + pass + ' -inform  ' + opts.informExt + ' -in '+ file + ' -outform '+ opts.outformExt + ' -out ' +  opts.newKeyName
-    , function(error, stdout) {
-    if(error) {
-      callback(error);
-    }
-    fs.readFileSync(opts.newKeyName, function(err, data) {
-      if(err) {
-        return callback(err);
-      }
-      fs.writeFileSync(file, data, function(err) {
-        if(err) {
-          return callback(err);
-        }
-        return console.log('saved back to original file without passphrase');
-      })
-      return callback(null);
-    })
-  })
-  return callback(null);
+
+  var cmd = util.format('openssl rsa -passin pass:%s -inform %s -in %s -outform %s -out',
+    pass,
+    opts.informExt,
+    file,
+    opts.outformExt,
+    opts.newKeyName);
+
+  exec(cmd, function(error) {
+    if (error) return callback(error);
+
+    fs.readFile(opts.newKeyName, function(err, data) {
+      if (err) return callback(err);
+      fs.writeFile(file, data, function(err) {
+        if (err) return callback(err);
+
+        callback(null);
+      });
+    });
+  });
 };
 
 /****************************************************************************************
@@ -143,27 +143,22 @@ ssl.removePasspharse = function(file, pass, opts, callback) {
 
 ******************************************************************************************/
 
-
 ssl.toFile = function(string, opts, callback) {
-  if(typeof opts === 'function') {
+  if (typeof opts === 'function') {
     callback = opts;
     opts = {};
   }
+
   opts.folderName = opts.folderName || 'temp';
   opts.name = opts.name || 'temp';
   opts.ext = opts.ext || '.pem';
-  fs.mkdirSync('./' + opts.folderName, function(err) {
-    if(err) {
-      return callback(err, null);
-    }
-  })
-    fs.writeFile(opts.folderName + '/' + opts.name + opts.ext, string, function(err) {
-        if(err) {
-          return callback(err, null);
-        }
-        return callback(null, opts.name + opts.ext);
-    })
-};
 
+  fs.mkdirSync(path.resolve(opts.folderName));
+
+  fs.writeFile(opts.folderName + '/' + opts.name + opts.ext, string, function(err) {
+    if (err) return callback(err, null);
+    return callback(null, opts.name + opts.ext);
+  });
+};
 
 module.exports = ssl;
