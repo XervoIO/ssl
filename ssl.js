@@ -57,8 +57,8 @@ ssl.toPEM = function(file, pemFileName, callback) {
 
 ******************************************************************************************/
 
-ssl.verify = function(file, callback) {
-  exec('openssl verify ' + file, function(error, stdout, stderr) {
+ssl.verify = function(caFile, file, callback) {
+  exec('openssl verify -CAfile ' + caFile + ' ' + file, function(error, stdout, stderr) {
     if(error) {
       return callback(error, null);
     } else if (stderr){
@@ -71,7 +71,7 @@ ssl.verify = function(file, callback) {
       remaining = remaining.substring(index + 1);
       index = line.indexOf(' ');
       var firstWord = line.substring(0, index);
-      if(firstWord === 'error') {
+      if(firstWord === 'error' || firstWord === 'unable') {
         return callback(line, null);
       }
       index = remaining.indexOf('\n');
