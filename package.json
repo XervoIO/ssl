@@ -1,10 +1,10 @@
 {
   "name": "ssl",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Verification of SSL certificates",
   "main": "ssl.js",
   "scripts": {
-    "test": "make build"
+    "test": "make test"
   },
   "homepage": "https://github.com/onmodulus/ssl.git",
   "bugs": "https://github.com/onmodulus/ssl/issues",
@@ -29,7 +29,6 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "mocha": "~1.11.0",
     "jshint": "~2.1.4"
   }
 }

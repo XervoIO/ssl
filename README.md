@@ -6,38 +6,28 @@ SSL certificate verification for node.js
 [![Build Status](https://travis-ci.org/onmodulus/ssl.png?branch=develop)](https://travis-ci.org/onmodulus/ssl)
 
 ## Docs
-You can check out openssl documentation at [openSSL](http://www.openssl.org/docs/apps/openssl.html).
+This module uses the OpenSSL command line utility - documentation can be found
+at [openssl.org](http://www.openssl.org/docs/apps/openssl.html).
 
-## Simple Usage
+## Usage
 
-    var ssl = require('ssl');
-    var cert = '';
-    var key = 'key.pem';
-    var pass = 'abcdefg';
+    var ssl = require('ssl')
+      , cert = 'encrypted certificate'
+      , caFile = 'file.ca'
+      , key = 'key.pem'
+      , pass = 'abcdefg';
 
-    var str_cert = 'encrypted certificate';
-    var opts {};
-    opts.fileName = 'cert.pem';
-
-    ssl.toFile(str_cert, function(err, file) {
-      if(err) {
-        return console.log(err)
-      }
-      cert = file;
+    ssl.toFile(cert, { fileName: 'cert.pem' } function(err, file) {
+      if (err) return console.error(err)
+      console.log('Wrote string content to file %s', file);
     });
 
-    ssl.verify(cert, function(err, status) {
-      if(err) {
-        return console.log(err);
-      }
-      return console.log('this certificate is ok');
+    ssl.verify(caFile, cert, function(err, status) {
+      if (err) return console.error(err);
+      console.log(status);
     });
 
-    var opts = {};
-    opts.newkeyName = 'newKey.pem';
-    ssl.removePassphrase(cert, pass, opts, function(err) {
-      if(err) {
-        return console.log(err);
-      }
-      return console.log('passphrase removed');
+    ssl.removePassphrase(cert, pass, { newKeyName: 'opencert.pem' }, function(err) {
+      if (err) return console.error(err);
+      console.log('passphrase removed!');
     });
