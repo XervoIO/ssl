@@ -29,6 +29,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "jshint": "~2.1.4"
+    "jshint": "~2.1.4",
+    "jasmine-node": "~1.11.0"
   }
 }
